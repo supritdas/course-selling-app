@@ -1,5 +1,5 @@
 const { Router } = require("express");
-const {adminModel} = require("../db");
+const {adminModel, courseModel} = require("../db");
 const adminRouter = Router();
 
 
@@ -59,7 +59,7 @@ adminRouter.post("/signin", async function (req, res){
     const {email, password} = req.body;
 
     const admin = await adminModel.findOne({
-        email: email,
+        email: email
     });
     const passwordMatch = await bcrypt.compare(password, admin.password);
 
