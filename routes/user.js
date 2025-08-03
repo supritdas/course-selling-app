@@ -2,7 +2,7 @@
 // const Router = express.Router;
 
 const { Router } = require("express");
-const {userModel} = require("../db");
+const {userModel, purchaseModel, courseModel} = require("../db");
 
 const userRouter = Router();
 
@@ -84,10 +84,23 @@ userRouter.post("/signin", async function (req, res){
     }
 })
 
-userRouter.get("/purchases", function(req, res){
-    res.json({
-        message: "User's purchases"
+
+
+userRouter.get("/purchases", userMiddleware, async function(req, res){
+    const userId = req.userId;
+    const purchases = await purchaseModel.find({
+        userId
     })
+
+    const coursesData = await courseModel.find({
+        _id: {$in: purchases.map(x => x.courseId)}
+    })
+
+    res.json({
+        purchases,
+        coursesData
+    })
+
 })
 
 module.exports = {
