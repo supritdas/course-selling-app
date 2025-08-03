@@ -6,7 +6,8 @@ const adminRouter = Router();
 const bcrypt  = require("bcrypt");
 const {z}  = require("zod");
 const jwt  = require("jsonwebtoken");
-const JWT_ADMIN_PASSWORD = "secretadmin";
+
+const {JWT_ADMIN_PASSWORD} = require("../config");
 
 
 
@@ -78,23 +79,60 @@ adminRouter.post("/signin", async function (req, res){
     }
 })
 
-// adminRouter.use(adminMiddleware);
 
-adminRouter.post("/", function (req, res){
+// create a course
+adminRouter.post("/course", adminMiddleware, async function (req, res){
+    const adminId = req.userId;
+    const {title, description, imageUrl, price} = req.body;
+
+    const course = await courseModel.create({
+        title: title,
+        description: description,
+        imageUrl: imageUrl,
+        price: price,
+        creatorId: adminId
+    })
+
     res.json({
-        message: "create course"
+        message: "Course created",
+        courseId: course._id
+    })
+
+
+})
+
+// Updating a course
+adminRouter.put("/course", adminMiddleware, async function (req, res){
+    const adminId = req.userId;
+    const {title, description, imageUrl, price, courseId} = req.body;
+
+    const course = await courseModel.updateOne({
+        _id: courseId,
+        creatorId: adminId
+    }, {
+        title: title,
+        description: description,
+        imageUrl: imageUrl,
+        price: price,
+    })
+
+    res.json({
+        message: "Course updated",
+        courseId: course._id
     })
 })
 
-adminRouter.put("/", function (req, res){
-    res.json({
-        message: "create course"
-    })
-})
+// See all courses
+adminRouter.get("/course/bulk", adminMiddleware, async function (req, res){
+    const adminId = req.userId;
 
-adminRouter.get("/bulk", function (req, res){
+    const courses = await courseModel.findOne({
+        creatorId: adminId
+    })
+
     res.json({
-        message: "create course"
+        message: "All courses",
+        courses
     })
 })
 

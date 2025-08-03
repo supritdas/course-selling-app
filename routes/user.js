@@ -9,7 +9,8 @@ const userRouter = Router();
 const bcrypt  = require("bcrypt");
 const {z}  = require("zod");
 const jwt  = require("jsonwebtoken");
-const JWT_USER_PASSWORD = "secretuser";
+
+const {JWT_USER_PASSWORD} = require("../config");
 
 
 
